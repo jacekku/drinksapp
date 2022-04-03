@@ -22,3 +22,7 @@
 
     MongoDB
     MongoDB is easy to deploy and use with NestJS.
+
+# Challenge 2
+
+Create hello world app
