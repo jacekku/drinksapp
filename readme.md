@@ -26,3 +26,23 @@
 # Challenge 2
 
 Create hello world app
+
+# Challenge 3
+
+Pick an API:
+
+https://www.thecocktaildb.com/api.php
+
+The application will allow user to search for drinks/cocktails. Anonymous user can only search for drinks.
+
+User will be able to:
+
+1. Search for drinks by their name
+2. See the details of chosen drink
+3. Create an account or login
+
+Logged in user will be able to:
+
+4. Save their search history
+5. Save their favorite drinks
+6. Change their password

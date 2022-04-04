@@ -1,45 +1,47 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import DrinkList from "./components/drinks/DrinkList";
+import SearchBar from "./components/SearchBar";
+import { Ingredient } from "./models/ingredient.model";
+import IngredientComponent from "./components/ingredients/IngredientComponent";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [drinks, setDrinks] = useState([]);
+  const [ingredient, setIngredient] = useState({} as any);
+
+  const [showDrinks, setShowDrinks] = useState(true);
+
+  const searchForDrinks = (query: string) => {
+    if (!query.length) return;
+    fetch(`http://localhost:4000/findDrink/${query}`)
+      .then((body) => body.json())
+      .then(setDrinks)
+      .catch((err) => console.error(err));
+  };
+
+  const searchForIngredients = (query: string) => {
+    if (!query.length) return;
+    fetch(`http://localhost:4000/findIngredient/${query}`)
+      .then((body) => body.json())
+      .then((body) => setIngredient(body[0]))
+      .catch((err) => console.error(err));
+  };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <SearchBar
+        searchForDrinks={searchForDrinks}
+        searchForIngredients={searchForIngredients}
+        showDrinks={setShowDrinks}
+      ></SearchBar>
+      {showDrinks ? (
+        <DrinkList drinks={drinks}></DrinkList>
+      ) : (
+        <IngredientComponent ingredient={ingredient}></IngredientComponent>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
