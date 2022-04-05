@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   UseFilters,
 } from '@nestjs/common';
@@ -20,24 +21,53 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  reset(user: User, newPassword: string) {
-    return 'yep';
+  async reset(
+    token: string,
+    body: { oldPassword: string; newPassword: string },
+  ) {
+    const jwt = this.jwtService.decode(token);
+    const dbUser = await this.findUsername((jwt as any).username);
+    const isMatch = await this.hashingService.comparePassword(
+      body.oldPassword,
+      dbUser.salt,
+      dbUser.password,
+    );
+    if (!isMatch) {
+      return {
+        exception: new BadRequestException('password is not correct'),
+      };
+    }
+    return this.saveUser({
+      username: dbUser.username,
+      password: body.newPassword,
+    } as User);
   }
+
   async login(user: User) {
     const dbUser = await this.findUsername(user.username);
-    if (!dbUser) return;
+    if (!dbUser) return { exception: new NotFoundException() };
     const isMatch = await this.hashingService.comparePassword(
       user.password,
       dbUser.salt,
       dbUser.password,
     );
     if (isMatch) {
-      const payload = { username: dbUser.username, sub: dbUser.id };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
+      return this.signToken(dbUser.username, dbUser.id);
     }
   }
+
+  private async saveUser(user: User) {
+    const { salt, hash } = await this.hashingService.generateHashAndSalt(
+      user.password,
+    );
+    const createdUser = await this.userModel.findOneAndUpdate({
+      username: user.username,
+      password: hash,
+      salt: salt,
+    });
+    return this.signToken(createdUser.username, createdUser.id);
+  }
+
   async createUser(user: User) {
     if (!user.username)
       return { exception: new BadRequestException('username is empty') };
@@ -49,18 +79,7 @@ export class UsersService {
         exception: new BadRequestException('username already registered'),
       };
     }
-    const { salt, hash } = await this.hashingService.generateHashAndSalt(
-      user.password,
-    );
-    const createdUser = await this.userModel.create({
-      username: user.username,
-      password: hash,
-      salt: salt,
-    });
-    const payload = { username: createdUser.username, sub: createdUser.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return this.saveUser(dbUser);
   }
 
   refreshToken(token: string) {
@@ -70,12 +89,7 @@ export class UsersService {
     } catch (error) {
       return { exception: new UnauthorizedException() };
     }
-    return {
-      access_token: this.jwtService.sign({
-        username: jwt.username,
-        sub: jwt.sub,
-      }),
-    };
+    return this.signToken(jwt.username, jwt.sub);
   }
 
   findUsername(username: string) {
@@ -84,5 +98,16 @@ export class UsersService {
         username: username,
       })
       .exec();
+  }
+
+  private signToken(username: string, id: string) {
+    const payload = { username: username, sub: id };
+
+    const token = this.jwtService.sign(payload);
+
+    return {
+      access_token: token,
+      exp: (this.jwtService.decode(token) as any).exp,
+    };
   }
 }

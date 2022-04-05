@@ -1,45 +1,81 @@
-import { useState, useEffect } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import DrinkList from "./components/drinks/DrinkList";
-import SearchBar from "./components/SearchBar";
-import { Ingredient } from "./models/ingredient.model";
-import IngredientComponent from "./components/ingredients/IngredientComponent";
+
+import { HashRouter, NavLink, Route, Router, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import Login from "./components/login/Login";
+import { useState, useEffect } from "react";
+import Register from "./components/login/Register";
+import ChangePassword from "./components/login/ChangePassword";
 
 function App() {
-  const [drinks, setDrinks] = useState([]);
-  const [ingredient, setIngredient] = useState({} as any);
+  const [token, setToken] = useState("");
 
-  const [showDrinks, setShowDrinks] = useState(true);
+  function wrappedSetToken(token: string, tokenExp: string) {
+    localStorage.setItem("token", token);
+    localStorage.setItem("tokenExp", tokenExp);
+    setToken(token);
+  }
 
-  const searchForDrinks = (query: string) => {
-    if (!query.length) return;
-    fetch(`http://localhost:4000/findDrink/${query}`)
+  function refreshToken(token: string) {
+    fetch(`http://localhost:4000/users/token`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((body) => body.json())
-      .then(setDrinks)
-      .catch((err) => console.error(err));
-  };
+      .then((body) => {
+        if (body.statusCode == 400) {
+          return alert(body.message);
+        }
+        wrappedSetToken(body.access_token, body.exp);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+      });
+  }
 
-  const searchForIngredients = (query: string) => {
-    if (!query.length) return;
-    fetch(`http://localhost:4000/findIngredient/${query}`)
-      .then((body) => body.json())
-      .then((body) => setIngredient(body[0]))
-      .catch((err) => console.error(err));
-  };
+  useEffect(() => {
+    const tokenExp = Number(localStorage.getItem("tokenExp"));
+    const date = new Date(0).setUTCSeconds(tokenExp);
+    if (date > Date.now()) {
+      refreshToken(localStorage.getItem("token") || "");
+    }
+  });
 
   return (
     <div className="App">
-      <SearchBar
-        searchForDrinks={searchForDrinks}
-        searchForIngredients={searchForIngredients}
-        showDrinks={setShowDrinks}
-      ></SearchBar>
-      {showDrinks ? (
-        <DrinkList drinks={drinks}></DrinkList>
-      ) : (
-        <IngredientComponent ingredient={ingredient}></IngredientComponent>
-      )}
+      {token}
+      <HashRouter>
+        <div className="header">
+          <NavLink to="/">Home</NavLink>
+
+          {!token ? (
+            <div>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </div>
+          ) : (
+            <div>
+              <NavLink to="/changePassword">Change password</NavLink>
+            </div>
+          )}
+        </div>
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route
+            path="/login"
+            element={<Login setToken={wrappedSetToken} />}
+          ></Route>
+          <Route
+            path="/register"
+            element={<Register setToken={wrappedSetToken} />}
+          ></Route>
+          <Route
+            path="/changePassword"
+            element={<ChangePassword setToken={wrappedSetToken} />}
+          ></Route>
+        </Routes>
+      </HashRouter>
     </div>
   );
 }

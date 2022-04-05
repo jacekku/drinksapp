@@ -17,7 +17,7 @@ export class UsersController {
 
   @Post('create')
   async createUser(@Body() user: User) {
-    const output = await this.userService.createUser(user);
+    const output = (await this.userService.createUser(user)) as any;
     if (output.exception) {
       throw output.exception;
     }
@@ -25,20 +25,34 @@ export class UsersController {
   }
 
   @Post('login')
-  login(@Body() user: User) {
-    return this.userService.login(user);
+  async login(@Body() user: User) {
+    const output = (await this.userService.login(user)) as any;
+    if (output.exception) {
+      throw output.exception;
+    }
+    return output;
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('reset')
-  reset(@Body() user: User, @Param() newPassword: string) {
-    this.userService.reset(user, newPassword);
+  async reset(
+    @Headers() headers: { authorization: string },
+    @Body() body: { oldPassword: string; newPassword: string },
+  ) {
+    const token = headers.authorization.replace('Bearer ', '');
+
+    const output = (await this.userService.reset(token, body)) as any;
+    if (output.exception) {
+      throw output.exception;
+    }
+    return output;
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('token')
   async getToken(@Headers() headers: { authorization: string }) {
     const token = headers.authorization.replace('Bearer ', '');
-    const output = await this.userService.refreshToken(token);
+    const output = (await this.userService.refreshToken(token)) as any;
     if (output.exception) {
       throw output.exception;
     }
