@@ -1,27 +1,18 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { AppService } from './app.service';
+import { DrinksService } from './drinks.service';
 import { Drink } from './model/drink.model';
-import { DrinkService } from './drinks/drink.service';
 import { Ingredient } from './model/ingredient.model';
 
-@Controller()
-export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly drinkService: DrinkService,
-  ) {}
+@Controller('drinks')
+export class DrinksController {
+  constructor(private readonly drinkService: DrinksService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
-  @Get('findDrink/:query')
+  @Get('drink/:query')
   async findDrinks(@Param('query') queryString: string): Promise<Drink[]> {
     return await this.drinkService.findDrinks(queryString);
   }
 
-  @Get('findIngredient/:query')
+  @Get('ingredient/:query')
   async findIngredient(
     @Param('query') queryString: string,
   ): Promise<Ingredient[]> {

@@ -1,11 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DrinkService } from './drinks/drink.service';
+import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DrinksModule } from './drinks/drinks.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService, DrinkService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot('mongodb://localhost/drinks'),
+    UsersModule,
+    DrinksModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

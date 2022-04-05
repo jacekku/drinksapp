@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import fetch from 'cross-fetch';
-import { Drink } from '../model/drink.model';
-import { Ingredient } from '../model/ingredient.model';
-import { IngredientDTO } from '../model/ingredientDTO.model';
+import { Drink } from './model/drink.model';
+import { Ingredient } from './model/ingredient.model';
+import { IngredientDTO } from './model/ingredientDTO.model';
 
 @Injectable()
-export class DrinkService {
+export class DrinksService {
   private drinksUrlBase = 'www.thecocktaildb.com/api/json/v1/1/';
   private searchUrl = 'search.php?';
 
