@@ -1,6 +1,5 @@
-import { Controller, Get, Head, Param, Headers } from '@nestjs/common';
+import { Controller, Get, Param, Headers } from '@nestjs/common';
 import { ActivityService } from '../activity/activity.service';
-import { Activity } from '../activity/model/activity.model';
 import { DrinksService } from './drinks.service';
 import { Drink } from './model/drink.model';
 import { Ingredient } from './model/ingredient.model';

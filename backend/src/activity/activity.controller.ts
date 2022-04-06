@@ -1,6 +1,5 @@
 import { Controller, Get, Headers } from '@nestjs/common';
 import { ActivityService } from '../activity/activity.service';
-import { Activity } from './model/activity.model';
 
 @Controller('activity')
 export class ActivityController {
