@@ -48,3 +48,25 @@ Logged in user will be able to:
 6. Change their password
 
 # Challenge 7
+
+Prerequisites:
+
+- NodeJS
+- Docker or MongoDB installed
+
+Starting database:
+
+- run `docker-compose up`, or
+- start MongoDB
+
+Starting server:
+
+1. go to /backend folder
+2. run `npm run start:prod`
+
+Starting website:
+
+1. go to /frontend folder
+2. run `npm run preview`
+
+This application serves for users to search for drinks and add them to favorites.
