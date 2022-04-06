@@ -19,11 +19,15 @@ let DrinksService = class DrinksService {
     async findDrinks(queryString) {
         const searchParams = new URLSearchParams({ s: queryString });
         const drinkResponse = await this.performGetWithSearchParams(searchParams);
+        if (!drinkResponse.drinks)
+            return [];
         return drinkResponse.drinks.map((drinkDto) => drink_model_1.Drink.fromDTO(drinkDto));
     }
     async findIngredient(queryString) {
         const searchParams = new URLSearchParams({ i: queryString });
         const ingredients = await this.performGetWithSearchParams(searchParams);
+        if (!ingredients.ingredients)
+            return [];
         return ingredients.ingredients.map((ingredient) => ingredient_model_1.Ingredient.fromDTO(ingredient));
     }
     async performGetWithSearchParams(searchParams) {

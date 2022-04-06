@@ -1,3 +1,12 @@
 .Drink {
   border: 1px solid black;
+  width: 200px;
+}
+.DrinkList {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+table {
+  margin: auto;
+  border: 1px solid black;
 }

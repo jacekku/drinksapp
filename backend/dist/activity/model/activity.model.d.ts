@@ -6,7 +6,7 @@
 /// <reference types="mongoose/types/mongooseoptions" />
 /// <reference types="mongoose/types/schemaoptions" />
 import { Document } from 'mongoose';
-export declare type ActivityType = 'SEARCH';
+export declare type ActivityType = 'SEARCH' | 'FAVORITE';
 export declare class Activity {
     userId: string;
     type: ActivityType;

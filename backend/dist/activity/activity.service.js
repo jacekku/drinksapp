@@ -23,28 +23,62 @@ let ActivityService = class ActivityService {
         this.jwtService = jwtService;
         this.activityModel = activityModel;
     }
+    getUserId(header) {
+        const token = header.replace('Bearer ', '');
+        return this.jwtService.decode(token).sub;
+    }
     async addSearchActivity(header, searchTerm) {
         if (!header)
             return;
-        const token = header.replace('Bearer ', '');
-        const userId = this.jwtService.decode(token).sub;
+        const userId = this.getUserId(header);
         const activity = {
             userId,
             type: 'SEARCH',
             value: searchTerm,
         };
-        this.activityModel.create(activity);
+        new this.activityModel(activity).save().catch((err) => {
+            console.error(err);
+        });
     }
     async getSearchHistory(header) {
         if (!header)
             return;
-        const token = header.replace('Bearer ', '');
-        const userId = this.jwtService.decode(token).sub;
+        const userId = this.getUserId(header);
         const result = await this.activityModel
             .find({
             userId: userId,
+            type: 'SEARCH',
         })
             .exec();
+        if (!result)
+            return [];
+        return result.map((item) => item.value);
+    }
+    async addFavoriteDrink(header, favoriteDrinkId) {
+        if (!header)
+            return;
+        const userId = this.getUserId(header);
+        const activity = {
+            userId,
+            type: 'FAVORITE',
+            value: favoriteDrinkId,
+        };
+        new this.activityModel(activity).save().catch((err) => {
+            console.error(err);
+        });
+    }
+    async getFavorites(header) {
+        if (!header)
+            return;
+        const userId = this.getUserId(header);
+        const result = await this.activityModel
+            .find({
+            userId: userId,
+            type: 'FAVORITE',
+        })
+            .exec();
+        if (!result)
+            return [];
         return result.map((item) => item.value);
     }
 };

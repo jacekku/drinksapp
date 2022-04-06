@@ -57,11 +57,11 @@ export class UsersService {
     const { salt, hash } = await this.hashingService.generateHashAndSalt(
       user.password,
     );
-    const createdUser = await this.userModel.findOneAndUpdate({
+    const createdUser = await new this.userModel({
       username: user.username,
       password: hash,
       salt: salt,
-    });
+    } as User).save();
     return this.signToken(createdUser.username, createdUser.id);
   }
 
@@ -76,7 +76,10 @@ export class UsersService {
         exception: new BadRequestException('username already registered'),
       };
     }
-    return this.saveUser(dbUser);
+    return this.saveUser({
+      username: user.username,
+      password: user.password,
+    } as User);
   }
 
   refreshToken(token: string) {

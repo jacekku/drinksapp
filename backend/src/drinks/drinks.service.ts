@@ -13,6 +13,7 @@ export class DrinksService {
     const searchParams = new URLSearchParams({ s: queryString });
     const drinkResponse: { drinks: DrinkSearchDTO[] } =
       await this.performGetWithSearchParams(searchParams);
+    if (!drinkResponse.drinks) return [];
     return drinkResponse.drinks.map((drinkDto) => Drink.fromDTO(drinkDto));
   }
 
@@ -20,6 +21,7 @@ export class DrinksService {
     const searchParams = new URLSearchParams({ i: queryString });
     const ingredients: { ingredients: IngredientDTO[] } =
       await this.performGetWithSearchParams(searchParams);
+    if (!ingredients.ingredients) return [];
     return ingredients.ingredients.map((ingredient) =>
       Ingredient.fromDTO(ingredient),
     );

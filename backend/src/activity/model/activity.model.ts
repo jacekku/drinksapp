@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type ActivityType = 'SEARCH';
+export type ActivityType = 'SEARCH' | 'FAVORITE';
 
 @Schema()
 export class Activity {

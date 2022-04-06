@@ -50,11 +50,11 @@ let UsersService = class UsersService {
     }
     async saveUser(user) {
         const { salt, hash } = await this.hashingService.generateHashAndSalt(user.password);
-        const createdUser = await this.userModel.findOneAndUpdate({
+        const createdUser = await new this.userModel({
             username: user.username,
             password: hash,
             salt: salt,
-        });
+        }).save();
         return this.signToken(createdUser.username, createdUser.id);
     }
     async createUser(user) {
@@ -68,7 +68,10 @@ let UsersService = class UsersService {
                 exception: new common_1.BadRequestException('username already registered'),
             };
         }
-        return this.saveUser(dbUser);
+        return this.saveUser({
+            username: user.username,
+            password: user.password,
+        });
     }
     refreshToken(token) {
         let jwt;

@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import { Drink } from "../../models/drink.model";
 import "./DrinkComponent.css";
 class Props {
@@ -13,6 +14,12 @@ export default function DrinkComponent(props: Props) {
         alt={props.drink.drink}
         width="100px"
       ></img>
+      <NavLink
+        to={{ pathname: "/details" } as any}
+        state={{ aboutProps: { drink: props.drink } }}
+      >
+        Details
+      </NavLink>
     </div>
   );
 }

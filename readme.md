@@ -46,3 +46,5 @@ Logged in user will be able to:
 4. Save their search history
 5. Save their favorite drinks
 6. Change their password
+
+# Challenge 7

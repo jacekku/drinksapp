@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Register from "./components/login/Register";
 import ChangePassword from "./components/login/ChangePassword";
 import Profile from "./components/login/Profile";
+import DrinkDetails from "./components/drinks/DrinkDetails";
 
 function App() {
   const [token, setToken] = useState("");
@@ -45,7 +46,6 @@ function App() {
 
   return (
     <div className="App">
-      {token}
       <HashRouter>
         <div className="header">
           <NavLink to="/">Home</NavLink>
@@ -75,6 +75,7 @@ function App() {
             path="/profile"
             element={<Profile setToken={wrappedSetToken} token={token} />}
           ></Route>
+          <Route path="/details" element={<DrinkDetails />}></Route>
         </Routes>
       </HashRouter>
     </div>
