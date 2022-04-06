@@ -1,11 +1,8 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  UseFilters,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './model/user.model';
@@ -52,7 +49,7 @@ export class UsersService {
       dbUser.password,
     );
     if (isMatch) {
-      return this.signToken(dbUser.username, dbUser.id);
+      return await this.signToken(dbUser.username, dbUser.id);
     }
   }
 

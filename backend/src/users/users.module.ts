@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { env } from 'process';
+import { AuthModule } from '../auth/auth.module';
 import { HashingService } from '../auth/hashing.service';
 import { JwtStrategy } from '../auth/jwt.strategy';
 import { User, UserSchema } from './model/user.model';
@@ -10,13 +10,8 @@ import { UsersService } from './users.service';
 
 @Module({
   imports: [
+    AuthModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.register({
-      secretOrKeyProvider: () => {
-        return process.env.jwtSecret;
-      },
-      signOptions: { expiresIn: '600s' },
-    }),
   ],
   controllers: [UsersController],
   providers: [UsersService, HashingService, JwtStrategy],

@@ -6,6 +6,7 @@ import Login from "./components/login/Login";
 import { useState, useEffect } from "react";
 import Register from "./components/login/Register";
 import ChangePassword from "./components/login/ChangePassword";
+import Profile from "./components/login/Profile";
 
 function App() {
   const [token, setToken] = useState("");
@@ -56,12 +57,12 @@ function App() {
             </div>
           ) : (
             <div>
-              <NavLink to="/changePassword">Change password</NavLink>
+              <NavLink to="/profile">Profile</NavLink>
             </div>
           )}
         </div>
         <Routes>
-          <Route path="/" element={<Home />}></Route>
+          <Route path="/" element={<Home token={token} />}></Route>
           <Route
             path="/login"
             element={<Login setToken={wrappedSetToken} />}
@@ -71,8 +72,8 @@ function App() {
             element={<Register setToken={wrappedSetToken} />}
           ></Route>
           <Route
-            path="/changePassword"
-            element={<ChangePassword setToken={wrappedSetToken} />}
+            path="/profile"
+            element={<Profile setToken={wrappedSetToken} token={token} />}
           ></Route>
         </Routes>
       </HashRouter>
